@@ -9,7 +9,7 @@ export function request(config) {
     })
     //2、axios的拦截器
     instance.interceptors.request.use(config => {
-        console.log(config);
+        // console.log(config);
         return config;
     }, err => {
         // console.log

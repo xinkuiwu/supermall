@@ -1,19 +1,27 @@
 <template>
   <div id ="home">
       <nav-bar class ="home-nav"><div slot="center">购物街</div></nav-bar>
-      
+        <tab-control :titles="['流行', '新款', '精选']"
+        @tabClick="tabClick"
+        ref="tabControl1"
+        class="tab-control"
+        v-show="isTabFixed" 
+         />      
       <scroll class="content" 
               ref="scroll" 
               :probe-type="3" 
               @scroll="contentScroll"
               :pull-up-load='true'
-              @pullingUp="loadMore">
-        <HomeSwiper :banners="banners"/>
+              @pullingUp="loadMore"
+             
+              >
+        <HomeSwiper :banners="banners" @swiperImageLoad="swiperImageLoad"/>
         <RecommendView :recommends="recommends"/>
         <FeatureView/>
-        <tab-control class="tab-control" 
-        :titles="['流行', '新款', '精选']"
-        @tabClick="tabClick" />
+        <tab-control :titles="['流行', '新款', '精选']"
+        @tabClick="tabClick"
+        ref="tabControl2" 
+         />
         <goods-list :goods="showGoods" />
       </scroll>  
       <back-top @click.native="backClick" v-show="isShowBackTop"/>
@@ -34,7 +42,8 @@
   import {getHomeMultidata, 
           getHomeGoods
           } from 'network/home';
-
+  import {debounce} from 'common/utils'
+  import {itemListenerMixin} from 'common/mixin'
   
 
   export default {
@@ -49,6 +58,7 @@
       Scroll,
       BackTop
     },
+    mixins: [itemListenerMixin],
     data () {
       return {
         banners: [],
@@ -59,7 +69,11 @@
           'sell': {page: 0, list: []}
         },
         currentType: 'pop',
-        isShowBackTop: false
+        isShowBackTop: false,
+        tabOffsetTop: 0,
+        isTabFixed: false,
+        saveY: 0,
+        // itemImgListener: null  也是放入mixin里了
       }
     },
     computed: {
@@ -70,15 +84,40 @@
     created(){
       // 请求多个数据
       this.getHomeMultidata();
+      //请求商品数据
       this.getHomeGoods('pop');
       this.getHomeGoods('new');
       this.getHomeGoods('sell');
+  
 
+    },
+    mounted() {
+      // 下面的东西写在mixin里面了。
+      //   // 防抖动包装
+      //   const refresh = debounce(this.$refs.scroll.refresh, 50)
+      //   // 监听item中图片加载完成（使用事件总线）
+      //   this.itemImgListener = () => {
+      //     refresh()          
+      // }
+      //   this.$bus.$on('itemImgLoad', this.itemImgListener)       
+    },
+    activated() {
+      // console.log('shouyewiezhi')
+      // console.log(this.saveY)
+      //这里得设置一定时间，不然可能会回到顶部
+      this.$refs.scroll.scrollTo(0, this.saveY, 0) 
+      this.$refs.scroll.refresh()
+    },
+    deactivated() {
+      //保存Y值
+      this.saveY = this.$refs.scroll.getScrollY()
+      this.$bus.$off('itemImgLoad', this.itemImgListener)
     },
     methods: {
       /**
        * 事件监听的方法
        */
+
       tabClick(index) {
        switch(index) {
          case 0:
@@ -91,9 +130,16 @@
            this.currentType = 'sell';
            break;                 
        }
+       this.$refs.tabControl1.currentIndex = index;
+       this.$refs.tabControl2.currentIndex = index;
+
       },
       contentScroll(position) {
+        // 判断BackTop是否显示
         this.isShowBackTop = (-position.y) > 1000
+        // 决定tabControl是否吸顶（position: fixed）
+        this.isTabFixed = (-position.y) > this.tabOffsetTop
+
       },
       //最后那个scroll才是真正的scroll对象，前面的scroll是ref的特指
       backClick() {
@@ -101,8 +147,9 @@
       },
       loadMore() {
         this.getHomeGoods(this.currentType)
-
-        this.$refs.scroll.scroll.refresh()
+      },
+      swiperImageLoad() {
+          this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
       },
       /**
        * 以下是网路请求的方法
@@ -130,7 +177,7 @@
 </script>
 <style scoped>
   #home {
-    padding-top: 44px;
+    /* padding-top: 44px; */
     height: 100vh;
     position: relative;
   }
@@ -138,15 +185,14 @@
     background-color: var(--color-tint);
     color: #fff;
 
-    position: fixed;
+    /* position: fixed;
     left: 0;
     right: 0;
     top: 0;
-    z-index: 9; 
+    z-index: 9;  */
   }
   .tab-control {
-    /* position: sticky; */
-    top:44px;
+    position: relative;
     z-index: 9;
   }
   .content {
