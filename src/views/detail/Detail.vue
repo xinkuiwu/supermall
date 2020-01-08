@@ -1,14 +1,14 @@
 <template>
     <div id="detail">
-        <detail-nav-bar class="detail-nav" />
+        <detail-nav-bar class="detail-nav"  @titleClick="titleClick"/>
         <Scroll class="content" ref="scroll">
             <DetailSwiper :topImages="topImages"/>
             <DetailBaseInfo :goods="goods"/>
             <DetailShopInfo :shop="shop"/>
             <DetailGoodsInfo :detail-info="detailInfo" @imageLoad="imageLoad"/>
-            <DetailParamInfo :param-info="paramInfo"/>
-            <DetailCommentInfo :comment-info="commentInfo"/>
-            <GoodsList :goods="recommends"/>
+            <DetailParamInfo ref="params" :param-info="paramInfo"/>
+            <DetailCommentInfo ref="comment" :comment-info="commentInfo"/>
+            <GoodsList ref="recommend" :goods="recommends"/>
         </Scroll>
     </div>
 </template>
@@ -54,7 +54,9 @@ export default {
         detailInfo: {},
         paramInfo: {},
         commentInfo: {},
-        recommends: []
+        recommends: [],
+        themeTopYs: [],
+        getThemeTopY: null
     };
   },
   created() {
@@ -70,6 +72,17 @@ export default {
          this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule)
          if (data.rate.cRate !== 0) {
              this.commentInfo = data.rate.list[0]
+         this.getThemeTopY = debounce(() => {
+            this.$nextTick(() => {
+            this.themeTopYs = []
+            
+            this.themeTopYs.push(0);
+            this.themeTopYs.push(this.$refs.params.$el.offsetTop);
+            this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
+            this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+            console.log(this.themeTopYs)
+         })
+         })
          }
      })
       
@@ -78,14 +91,33 @@ export default {
       })
   },
   mounted() {
- 
+
+  },
+  updated() {
+      
   },
   destroyed() {
       this.$bus.$off('itemImgLoad', this.itemImgListener)
     },
   methods: {
       imageLoad() {
-          this.$refs.scroll.refresh()
+        //   this.$refs.scroll.refresh()//使用了下面的mixin防抖的refresh
+          this.refresh()
+          this.getThemeTopY()
+        //下面是节流方式，上面用的是防抖动
+        //     this.$nextTick(() => {
+        //     this.themeTopYs = []
+            
+        //     this.themeTopYs.push(0);
+        //     this.themeTopYs.push(this.$refs.params.$el.offsetTop);
+        //     this.themeTopYs.push(this.$refs.comment.$el.offsetTop);
+        //     this.themeTopYs.push(this.$refs.recommend.$el.offsetTop);
+        //     // console.log(this.themeTopYs)
+        //  })
+      },
+      titleClick(index) {
+          console.log(index)
+          this.$refs.scroll.scrollTo(0, -this.themeTopYs[index], 200)
       }
   }
 }
