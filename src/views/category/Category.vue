@@ -1,74 +1,79 @@
 <template>
-  <div class="wrapper">
-      <ul class="content">
-        <button @click="btnClick">按钮</button>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>   
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>   
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>    
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>  
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>    
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>    
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>    
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-        <li>分类列表</li>
-      </ul>
+  <div>
+      <div class="wrapper">
+          <ul class="content">
+            <button @click="btnClick">按钮</button>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>   
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>   
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>    
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>  
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>    
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>    
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>    
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+            <li>分类列表</li>
+          </ul>
+      </div>
+      <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
 <script>
   import BScroll from 'better-scroll'
+import {backTopMixin} from 'common/mixin'
 
 export default {
   name: "Category",
+  mixins: [backTopMixin],
   mounted() {
     this.scroll =new BScroll(document.querySelector('.wrapper'), {
         probeType: 3,
@@ -101,7 +106,7 @@ export default {
     height: 150px;
     background-color: red;
 
-     overflow: hidden;
+     /* overflow: hidden; */
      /* overflow-y: scroll;  */
   }
 </style>
