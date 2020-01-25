@@ -16,7 +16,7 @@ git clone https://github.com/xinkuiwu/supermall.git
 npm install
 ```
 
-根据package.json的包依赖关系，使用npm安装各种依赖包
+根据package.json的包依赖关系，使用npm安装各种依赖包 
 
 ### Compiles and hot-reloads for development
 
